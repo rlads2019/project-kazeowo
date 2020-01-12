@@ -71,15 +71,16 @@ jiabaptt <- unite(jiabaptt,
                   title_segged, content, 
                   sep = " ") 
 
-knitr::kable(jiaba_ptt, align = "c")
+knitr::kable(jiabaptt, align = "c")
 
-#write.csv(jiaba_ptt ,file="jiabaptt.csv",row.names=F, na = "NA")
+#write.csv(jiabaptt ,file="jiabaptt.csv",row.names=F, na = "NA")
 
 ```
 
 
-
+#詞頻統計
 ```{r}
+
 
 library(tidytext)
 library(dplyr)  
@@ -88,9 +89,11 @@ jiaba_tidytext <- jiabaptt %>%
 unnest_tokens(output = "word", input = "all_content",  
                 token = "regex", pattern = " ")   
 
+##基礎的詞頻統計
 jiaba_word <- as.factor(jiaba_tidytext$word)
 summary(jiaba_word)
 
+##去除只有一個字的詞的 詞頻統計
 jiaba_word2 <- as.factor(jiaba_tidytext$word[nchar(jiaba_tidytext$word)!=1])
 summary(jiaba_word2)
 
