@@ -32,7 +32,7 @@
   - 分手理由的quanteda
 
 3.`emotion_vis`     
-  -分手情感詞長條圖(分為形容詞、名詞、動詞)
+  - 分手情感詞長條圖(分為形容詞、名詞、動詞)
 
 
 - csv檔的雲端硬碟版 https://drive.google.com/drive/folders/1ZhjV4rMIIOkYAcE7SVwtkwmZ69kmgE9Y?usp=sharing
