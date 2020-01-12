@@ -25,13 +25,13 @@
 
 ## 統計繪圖
 
-1.`find_love_time`    
+1.`find_love_time.rmd`    
   - 交往時間的統計與長條圖
 
 2.`find_reason.rmd`     
   - 分手理由的quanteda
 
-3.`emotion_vis`     
+3.`emotion_vis.rmd`     
   - 分手情感詞長條圖(分為形容詞、名詞、動詞)
 
 
