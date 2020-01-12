@@ -2,6 +2,7 @@
 # 原始碼說明文件
 
 ##原始資料製作
+
 0.`positive.txt` & `negative.txt`    
   - 情緒詞辭典
 
