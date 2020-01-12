@@ -18,7 +18,7 @@
   - 有標詞性的斷詞 
   - 詞頻統計與文字雲(沒有介係詞)
 
-4.`emotion_dict.R & emotion_dict.csv` & `emotion_top10.csv`    
+4.`emotion_dict.R` & `emotion_dict.csv` & `emotion_top10.csv`    
   - 情感字典與數量(有標詞性) 
   - 正面情緒詞和負面情緒詞的統計圖
   - 篩選出分手形容詞、名詞、動詞前十名( emotion_dict.csv → emotion_Top10.csv )
