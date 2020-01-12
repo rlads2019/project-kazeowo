@@ -1,7 +1,7 @@
 
 # 原始碼說明文件
 
-##原始資料製作
+## 原始資料製作
 
 0.`positive.txt` & `negative.txt`    
   - 情緒詞辭典
@@ -23,7 +23,8 @@
   - 正面情緒詞和負面情緒詞的統計圖(emotion_dict.R檔)
   - 篩選出分手形容詞、名詞、動詞前十名(emotion_dict.csv → emotion_Top10.csv)
 
-##統計繪圖
+## 統計繪圖
+
 1.`find_love_time`    
   - 交往時間的統計與長條圖
 
