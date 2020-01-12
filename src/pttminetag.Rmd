@@ -1,0 +1,112 @@
+---
+title: ''
+output: html_document
+---
+
+```{r}
+#讀檔,跟之前一樣
+pttmine<-read.csv("ptt.csv",stringsAsFactors = F)
+
+#選擇心情版，生成tbl_post_emotion   
+ library(dplyr)
+tbl_post <- pttmine$post_info_tbl
+tbl_post_emotion <-filter(pttmine,post_category=="心情")
+
+#再去除標題為re的，生成tbl_post_select
+library(stringr)
+re <- tbl_post_emotion$post_title
+reject <- str_detect(re,"Re:")
+
+tbl_post_select<- tbl_post_emotion %>%
+  mutate(if_re = reject) %>%
+  filter(if_re == F)
+
+```
+
+
+
+##斷詞2
+```{r}
+require(jiebaR)
+library(jiebaR)
+title <- tbl_post_select$post_title
+content<-tbl_post_select$post_content
+
+
+tag <- worker(type = "tag") 
+
+title_tagged <- rep("",823)
+content_tagged <- rep("",823)
+
+
+for (i in seq_along(title)) {
+title_tagseg <- tag <= title[i]
+title_tag <- names(title_tagseg)
+title_tagged[i] <- paste0(title_tagseg,"(",title_tag,")", collapse = " ") 
+}
+
+for (i in seq_along(content)) {
+content_tagseg <- tag <= content[i]
+content_tag <- names(content_tagseg)
+content_tagged[i] <- paste0(content_tagseg,"(",content_tag,")", collapse = " ") 
+}
+
+
+jiaba_ptt_tag <- tibble::tibble(
+  id = seq_along(content),  
+  title = title ,
+  title_segged = title_tagged,
+  content = content_tagged
+  
+)
+
+library(tidyr)
+tag_ptt <- unite(jiaba_ptt_tag,
+                  col = "all_content_tag", 
+                  title_segged, content, 
+                  sep = " ") 
+
+
+#write.csv(tag_ptt,"ptttag.csv",row.names=F, na = "NA")
+
+
+```
+
+
+#把介係詞c uj ul r d p zg y f 弄掉 m是數量單位
+```{r}
+library(tidytext)
+library(dplyr)  
+
+jiaba_tidytext_tag <- tag_ptt %>%
+unnest_tokens(output = "word", input = "all_content_tag",  
+                token = "regex", pattern = " ")   
+
+library(stringr)
+if_inter <- str_detect(jiaba_tidytext_tag$word,"c|uj|ul|r|d|p|zg|y|f|m")
+
+library(dplyr)
+jiaba_tidytext_tag_select<- jiaba_tidytext_tag %>%
+  mutate(if_inter = if_inter) %>%
+  filter(if_inter == F) 
+
+jiaba_word_tag_select <- as.factor(jiaba_tidytext_tag_select$word)
+summary(jiaba_word_tag_select)
+
+jiaba_tidytext_tag_select2 <- jiaba_tidytext_tag_select %>% 
+   separate(
+   col="word",
+   into = c("word","kind"),
+   sep = "\\(")
+if_one <- nchar(jiaba_tidytext_tag_select2$word)==1
+jiaba_tidytext_tag_select3<- jiaba_tidytext_tag_select2 %>%
+  mutate(if_one = if_one) %>%
+  filter(if_one == F) 
+
+library(quanteda)
+quanteda_ptt_tag <- corpus(jiaba_tidytext_tag_select3, "id", "word")
+document_term_matrix <- dfm(quanteda_ptt_tag)
+textplot_wordcloud(document_term_matrix)
+
+```
+

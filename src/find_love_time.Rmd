@@ -1,0 +1,54 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+
+
+```{r}
+ptttag <- read.csv("ptttag.csv",stringsAsFactors = F)
+
+library(quanteda)
+quanteda_ptt_tag <- corpus(ptttag, "id", "all_content_tag")
+tokens_ptt_tag <- tokens(quanteda_ptt_tag, "fastestword")
+
+love <- kwic(tokens_ptt_tag, "交往", window = 5, valuetype = "regex") 
+
+lovetime <-love$post
+library(stringr)
+lovetimes <- strsplit(lovetime," ") %>% unlist(.,recursive = F)
+lovetimem <-str_extract(lovetimes,".+年|.+月")
+lovetimem <-lovetimem[is.na(lovetimem)==F]
+id <-1:180
+lovetime_dfm <- data.frame(id,lovetimem)
+
+
+lovetimea <- strsplit(lovetime," ") 
+
+library(dplyr)
+lovetime_dfmcount <- lovetime_dfm %>%
+  group_by(lovetimem) %>%
+  summarise(n=n()) %>%
+  arrange(desc(n))
+
+lovetime_dfmcount
+
+```
+
+```{r}
+library(ggplot2)
+lovetime_dfmcount2 <- lovetime_dfmcount[1:9,]
+
+lovetime_dfmcount2$lovetimem = factor(lovetime_dfmcount2$lovetimem, levels=c("一個月","半年","一年","兩年","三年","四年","五年","六年","七年")) 
+
+
+
+
+ggplot(lovetime_dfmcount2) +
+geom_bar(aes(x = lovetimem,y=n ),stat="identity", position="stack",width = 0.7) +
+xlab("")
+
+
+
+```
+

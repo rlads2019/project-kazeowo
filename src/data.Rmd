@@ -1,0 +1,56 @@
+---
+title: "data"
+output: html_document
+---
+
+#ptt爬資料
+
+安裝那個guthub時有可選套件 選1(all)會失敗 選3就OK了
+
+```{r}
+#install.packages("devtools")
+
+require(devtools)
+
+#install_github("shihjyun/PTTmineR")
+
+
+```
+
+
+抓取男女版標題為分手的所有文
+
+```{r}
+library(PTTmineR)
+
+pttminer <- PTTmineR$new(task.name = "breakup_ptt") ;pttminer
+
+pttminer %>% 
+  mine_ptt(board = "Boy-Girl",
+           keyword="分手",
+           last.n.page = 500) %>%
+  export_ptt(export.type = "tbl",
+             obj.name = "tbl_result") 
+
+tbl_post <- tbl_result$post_info_tbl
+
+```
+
+
+從上次抓的內容更新
+
+```{r}
+library(PTTmineR)
+
+update_id <- pttminer$result_dt$post_info_dt$post_id
+pttminer %>% 
+  update_ptt(update.post.id = update_id)
+```
+
+
+寫檔
+```{r}
+#write.csv(tbl_post,file="ptt.csv",row.names=F, na = "NA")
+```
+
+

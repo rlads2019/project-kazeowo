@@ -1,0 +1,55 @@
+---
+title: ''
+output: html_document
+---
+
+
+
+
+
+```{r}
+jiabaptt <- read.csv("jiabaptt.csv",stringsAsFactors = F)
+
+
+library(quanteda)
+
+quanteda_ptt <- corpus(jiabaptt, "id", "all_content")
+tokens_ptt <- tokens(quanteda_ptt, "fastestword")
+
+because <- kwic(tokens_ptt, "因為", window = 10, valuetype = "regex") 
+reason1 <-because$post
+reason1split <-strsplit(reason1," ")
+reason1word <- unlist(reason1split)
+reasonkey1 <- as.factor(reason1word[nchar(reason1word)!=1])
+
+#因為
+summary(reasonkey1)##因為的後面常出現的關鍵字
+because ##用這個查字
+
+
+so <- kwic(tokens_ptt, "所以", window = 10, valuetype = "regex") 
+reason2 <-so$pre
+reason2split <-strsplit(reason2," ")
+reason2word <- unlist(reason2split)
+reasonkey2 <- as.factor(reason2word[nchar(reason2word)!=1])
+
+#所以後面
+summary(reasonkey2) ##所以的前面常出現的關鍵字
+so ##用這個查字
+
+
+
+why <- kwic(tokens_ptt, "原因", window = 10, valuetype = "regex") 
+reason3 <-why$post
+reason3split <-strsplit(reason3," ")
+reason3word <- unlist(reason3split)
+reasonkey3 <- as.factor(reason3word[nchar(reason3word)!=1])
+
+#原因後面
+summary(reasonkey3) ##原因的後面常出現的關鍵字
+why ##用這個查字
+
+
+```
+
+

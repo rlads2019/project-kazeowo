@@ -1,0 +1,51 @@
+---
+title: "Visual"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#讀檔
+ library(readr)
+ emotion <- read.csv("emotion_top10.csv", encoding = "UTF-8" )
+
+#資料篩選-a
+ library(dplyr)
+ emotion_a <- emotion %>%
+   filter(new_df_select_category1 == "a") 
+#資料篩選-v
+ library(dplyr)
+ emotion_v <- emotion %>%
+   filter(new_df_select_category1 == "v")
+#資料篩選-n
+ library(dplyr)
+ emotion_n <- emotion %>%
+   filter(new_df_select_category1 == "n") 
+#視覺化-a
+library(ggplot2)
+ggplot(data = emotion_a)+
+  geom_bar(mapping = aes(x = word, y = num, fill = sentiment), stat = "identity" )
+#視覺化-v
+library(ggplot2)
+ggplot(data = emotion_v)+
+  geom_bar(mapping = aes(x = word, y = num, fill = sentiment), stat = "identity" )
+#視覺化-n
+library(ggplot2)
+ggplot(data = emotion_n)+
+  geom_bar(mapping = aes(x = word, y = num, fill = sentiment), stat = "identity" )
+
+
+ 
+```
+

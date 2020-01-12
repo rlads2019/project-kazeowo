@@ -1,0 +1,146 @@
+---
+title: "pttmine"
+output: html_document
+---
+
+#讀取存好的檔案來初步處理資料(放在同一個資料夾)
+
+處理好的資料是tbl_post_select
+```{r}
+#讀檔
+pttmine<-read.csv("ptt.csv",stringsAsFactors = F)
+
+#選擇心情版，生成tbl_post_emotion   
+ library(dplyr)
+tbl_post <- pttmine$post_info_tbl
+tbl_post_emotion <-filter(pttmine,post_category=="心情")
+
+#再去除標題為re的，生成tbl_post_select
+library(stringr)
+re <- tbl_post_emotion$post_title
+reject <- str_detect(re,"Re:")
+
+tbl_post_select<- tbl_post_emotion %>%
+  mutate(if_re = reject) %>%
+  filter(if_re == F)
+
+```
+
+#斷詞
+
+```{r}
+
+require(jiebaR)
+library(jiebaR)
+title <- tbl_post_select$post_title
+content<-tbl_post_select$post_content
+
+jiabaplace <- worker()
+
+  title_segged <- rep("",823)
+content_segged <- rep("",823)
+
+
+for (i in seq_along(title_segged)) {
+title_seg <- segment(title[i], jiabaplace) 
+title_segged[i] <- paste0(title_seg, collapse = " ") 
+
+}
+
+
+for (i in seq_along(content_segged)) {
+content_seg <- segment(content[i], jiabaplace) 
+content_segged[i] <- paste0(content_seg, collapse = " ") 
+}
+
+
+jiabaptt <- tibble::tibble(
+  id = seq_along(content),  
+  title = title ,
+  title_segged = title_segged,
+  content = content_segged
+  
+)
+
+ 
+
+#合併title跟content成為all_content，因為標題也透漏了很重要的資訊
+library(tidyr)
+jiabaptt <- unite(jiabaptt,
+                  col = "all_content", 
+                  title_segged, content, 
+                  sep = " ") 
+
+knitr::kable(jiaba_ptt, align = "c")
+
+#write.csv(jiaba_ptt ,file="jiabaptt.csv",row.names=F, na = "NA")
+
+```
+
+
+
+```{r}
+
+library(tidytext)
+library(dplyr)  
+
+jiaba_tidytext <- jiabaptt %>%
+unnest_tokens(output = "word", input = "all_content",  
+                token = "regex", pattern = " ")   
+
+jiaba_word <- as.factor(jiaba_tidytext$word)
+summary(jiaba_word)
+
+jiaba_word2 <- as.factor(jiaba_tidytext$word[nchar(jiaba_tidytext$word)!=1])
+summary(jiaba_word2)
+
+```
+
+
+
+
+
+#文字雲(去掉只有一個字的詞)
+```{r}
+jiabaptt <- read.csv("jiabaptt.csv",stringsAsFactors = F)
+  title_segged_no1 <- rep("",823)
+content_segged_no1 <- rep("",823)
+
+for (i in seq_along(title)) {
+  title_seg <- segment(title[i], jiabaplace) 
+  title_segg <- title_seg[nchar(title_seg)!=1]
+title_segged_no1[i] <- paste0(title_segg, collapse = " ") 
+}
+for (i in seq_along(content)) {
+  content_seg <- segment(content[i], jiabaplace) 
+  content_segg <- content_seg[nchar(content_seg)!=1]
+content_segged_no1[i] <- paste0(content_segg, collapse = " ") 
+}
+jiaba_ptt_no1 <- tibble::tibble(
+  id = seq_along(content),  
+  title = title ,
+  title_segged = title_segged_no1,
+  content = content_segged_no1
+  
+)
+library(tidyr)
+jiaba_ptt_no1 <- unite(jiaba_ptt_no1,
+                  col = "all_content_no1", 
+                  title_segged,content , 
+                  sep = " ") 
+
+
+
+library(quanteda)
+quanteda_ptt_no1 <- corpus(jiaba_ptt_no1, "id", "all_content_no1")
+tokens_ptt_no1 <- tokens(quanteda_ptt_no1 ,"fastestword")
+document_term_matrix <- dfm(quanteda_ptt_no1)
+textplot_wordcloud(document_term_matrix)
+
+
+```
+
+
+
+
+
